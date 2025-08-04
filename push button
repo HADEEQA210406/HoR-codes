@@ -1,0 +1,16 @@
+from machine import Pin
+from time import sleep
+
+button = Pin(5, Pin.IN, Pin.PULL_DOWN)  
+led = Pin(2, Pin.OUT)  
+
+while True:
+    if button.value():  
+        for _ in range(5):  
+            led.value(1)
+            sleep(0.3)
+            led.value(0)
+            sleep(0.3)
+    else:
+        led.value(0)
+        
