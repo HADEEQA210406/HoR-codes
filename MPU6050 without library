@@ -1,0 +1,34 @@
+from machine import I2C, Pin
+from time import sleep
+
+MPU6050_ADDR = 0x68
+
+PWR_MGMT_1 = 0x6B
+ACCEL_XOUT_H = 0x3B
+GYRO_XOUT_H = 0x43
+
+i2c = I2C(0, scl=Pin(22), sda=Pin(21))
+
+i2c.writeto_mem(MPU6050_ADDR, PWR_MGMT_1, b'\x00')
+
+def read_raw_data(addr):
+    high = i2c.readfrom_mem(MPU6050_ADDR, addr, 1)[0]
+    low = i2c.readfrom_mem(MPU6050_ADDR, addr + 1, 1)[0]
+    value = (high << 8) | low
+    if value > 32767:
+        value -= 65536
+    return value
+
+while True:
+    ax = read_raw_data(ACCEL_XOUT_H)
+    ay = read_raw_data(ACCEL_XOUT_H + 2)
+    az = read_raw_data(ACCEL_XOUT_H + 4)
+
+    gx = read_raw_data(GYRO_XOUT_H)
+    gy = read_raw_data(GYRO_XOUT_H + 2)
+    gz = read_raw_data(GYRO_XOUT_H + 4)
+
+    print('Accel: X={:.2f} Y={:.2f} Z={:.2f}'.format(ax/16384, ay/16384, az/16384))
+    print('Gyro : X={:.2f} Y={:.2f} Z={:.2f}'.format(gx/131, gy/131, gz/131))
+    print('---')
+    sleep(1)
