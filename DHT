@@ -1,0 +1,15 @@
+from machine import Pin
+import dht
+import time
+
+sensor = dht.DHT22(Pin(5)) 
+
+while True:
+    try:
+        sensor.measure()
+        temp = sensor.temperature()
+        hum = sensor.humidity()
+        print('Temperature: {:.1f}°C   Humidity: {:.1f}%'.format(temp, hum))
+    except OSError as e:
+        print('Sensor error:', e)
+    time.sleep(2)
